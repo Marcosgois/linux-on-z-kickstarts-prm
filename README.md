@@ -55,6 +55,5 @@ openssl passwd -6
 ```
 
 📖 References
-	•	Red Hat Kickstart Documentation: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/performing_an_advanced_rhel_installation/assembly_automating-the-installation-with-kickstart_installing-rhel
-  
-	•	Kickstart Syntax Reference: https://pykickstart.readthedocs.io/en/latest/
+- [Red Hat Kickstart Documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/performing_an_advanced_rhel_installation/assembly_automating-the-installation-with-kickstart_installing-rhel)
+- [Kickstart Syntax Reference](https://pykickstart.readthedocs.io/en/latest/)
