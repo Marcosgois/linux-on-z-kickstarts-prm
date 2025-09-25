@@ -1,18 +1,18 @@
-# 🚀 RHEL Automated Installation with Kickstart
+# RHEL Automated Installation with Kickstart
 
 This repository provides **example files** to automate the installation of **Red Hat Enterprise Linux (RHEL)** using **Kickstart** and custom **boot parameters**.  
 All sensitive information has been anonymized. Use them as a reference to build your own setup.
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 - [`rhel94bond`](prm/rhel94bond.prm) → Example boot parameters (kernel line).  
 - [`rhelvirtksbond`](kickstart/rhelvirtksbond) → Example Kickstart configuration file.
 
 ---
 
-## ⚙️ How to Use
+## How to Use
 
 ### 1. Prepare the Installation Server
 - Configure an HTTP or NFS server to host your RHEL installation tree.  
@@ -48,23 +48,11 @@ After installation and reboot:
 
 ---
 
-## 🛠️ Customization Tips
+## Customization Tips
 - **Root password**: generate a hash with  
 ```bash
 openssl passwd -6
 ```
-	SSH keys: replace the example key with your own.
-	•	Disk config: modify the part and logvol directives.
-	•	Packages: adjust the %packages section.
-
-⸻
-
-🔒 Security Notes
-	•	Never publish real IPs, credentials, SSH keys, or UUIDs in public repositories.
-	•	Always test in an isolated environment before production.
-	•	Treat these files as templates, not production-ready configs.
-
-⸻
 
 📖 References
 	•	Red Hat Kickstart Documentation: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/performing_an_advanced_rhel_installation/assembly_automating-the-installation-with-kickstart_installing-rhel
