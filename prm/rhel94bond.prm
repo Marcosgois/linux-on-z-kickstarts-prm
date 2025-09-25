@@ -1,0 +1,12 @@
+ro ramdisk_size=40000 systemd.show_status=1
+ip=192.168.0.10::192.168.0.1:23:server.example.com:bond0:none
+rd.znet=qeth,0.0.0006,0.0.0007,0.0.0008,layer2=1,portno=0
+rd.znet=qeth,0.0.012c,0.0.012d,0.0.012e,layer2=1,portno=0
+bond=bond0:eth0,eth1:mode=active-backup:fail_over_mac=1,primary=eth0
+inst.sshd
+inst.repo=http://example.repo.local/rh94
+ks.device=eth0 inst.text ipv6.disable=1
+inst.ks=http://example.repo.local/rh94/images/rhelvirtks
+console=ttysclp0 console=ttyS0
+sclp_con_pages=256
+rd.debug

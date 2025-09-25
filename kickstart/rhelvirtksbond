@@ -1,0 +1,98 @@
+# Configuração do Kickstart para RHEL
+
+# Configuração de autenticação
+authselect --enableshadow --passalgo=sha512
+
+# Fonte de instalação
+url --url=http://example.repo.local/rh94/
+
+# Modo de instalação
+text
+
+# Configuração do primeiro boot
+firstboot --enable
+
+# Ignorar discos não utilizados
+ignoredisk --only-use=disk/by-id/dm-uuid-mpath-EXAMPLE_DISK_ID
+
+# Configuração do teclado e idioma
+keyboard --vckeymap=us --xlayouts='us'
+lang en_US.UTF-8
+
+# Configuração de firewall
+firewall --enabled --ssh
+
+# Configuração do Bonding de Rede
+# Criar bond0 com IP fictício e associar interfaces
+network --bootproto=static --device=bond0 --gateway=192.168.0.1 --ip=192.168.0.10 --netmask=255.255.255.0 --noipv6 --activate --bondslaves=eth0,eth1 --bondopts=mode=active-backup,miimon=100 --nameserver=8.8.8.8 --hostname=server.example.com
+
+# Configuração de senha root (hash fictício)
+rootpw --iscrypted $6$EXAMPLE_HASH$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Configuração de serviços
+services --enabled="chronyd"
+
+# Configuração de fuso horário
+timezone America/Sao_Paulo
+
+# Configuração de usuário
+user --groups=wheel --name=adminuser --password=changeme --plaintext --gecos="User Example, ExampleRole, +5511999999999, user@example.com"
+sshkey --username=adminuser "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDEXAMPLEKEY admin@example.local"
+
+# Configuração do Bootloader
+bootloader --append=" crashkernel=auto" --location=mbr --boot-drive=disk/by-id/dm-uuid-mpath-EXAMPLE_DISK_ID
+
+# Configuração de partições
+clearpart --all --initlabel
+
+part /boot --fstype="ext2" --ondisk=disk/by-id/dm-uuid-mpath-EXAMPLE_DISK_ID --size=800
+part pv.359 --fstype="lvmpv" --ondisk=disk/by-id/dm-uuid-mpath-EXAMPLE_DISK_ID --grow
+
+volgroup vgexample --pesize=4096 pv.359
+
+logvol /     --fstype="xfs"  --size=7000 --name=lvroot --vgname=vgexample
+logvol /var  --fstype="xfs"  --size=3000 --name=lvvar --vgname=vgexample
+logvol /home --fstype="xfs"  --size=1000 --name=lvhome --vgname=vgexample
+logvol /opt  --fstype="xfs"  --size=500  --name=lvopt --vgname=vgexample
+logvol /tmp  --fstype="xfs"  --size=500  --name=lvtmp --vgname=vgexample
+logvol /swap --fstype="swap" --size=4096 --name=lvswap --vgname=vgexample
+# logvol swap  --fstype="swap" --size=4096 --grow --name=lvswap --vgname=vgexample
+
+# Pacotes a serem instalados
+%packages --ignoremissing --inst-langs en_US
+@base
+@core
+@input-methods
+@virtualization-platform
+@virtualization-client
+@virtualization-tools
+chrony
+kexec-tools
+%end
+
+# Configuração de Add-ons
+%addon com_redhat_kdump --enable --reserve-mb='auto'
+%end
+
+# Aceitar EULA e reiniciar ao finalizar
+eula --agreed
+reboot
+
+# Post-Installation Tasks
+%post --log=/root/post.log
+/usr/bin/cat > /etc/yum.repos.d/local.repo <<EOF
+[LocalRepo_BaseOS]
+name=LocalRepository_BaseOS
+baseurl=http://example.repo.local/rh94/BaseOS
+enabled=1
+gpgcheck=0
+
+[LocalRepo_AppStream]
+name=LocalRepository_AppStream
+baseurl=http://example.repo.local/rh94/AppStream
+enabled=1
+gpgcheck=0
+EOF
+
+for drv in qemu network nodedev nwfilter secret storage interface; do systemctl start virt${drv}d{,-ro,-admin}.socket; done
+%end
